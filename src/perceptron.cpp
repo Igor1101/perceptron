@@ -3,7 +3,7 @@
 // Author      : Igor
 // Version     :
 // Copyright   : Copyright (c) Igor Muravyov
-// Description : Hello World in C++, Ansi-style
+// Description : C++, Ansi-style
 //============================================================================
 
 #include <iostream>
