@@ -17,7 +17,7 @@ class Perceptron {
 private:
 	float w1;
 	float w2;
-	const float speed = 0.1;
+	float speed;
 	// trigger threshold
 	float trig;
 public:
@@ -25,10 +25,11 @@ public:
 	{
 		return (w1*x1+w2*x2);
 	}
-	Perceptron(float trig) {
+	Perceptron(float trig, float speed) {
 		w1 = 0;
 		w2 = 0;
 		this->trig = trig;
+		this->speed = speed;
 	}
 	bool result(float x1, float x2) {
 		return (f(x1, x2) > trig);
@@ -53,7 +54,6 @@ struct point_t {
 	float y;
 };
 int main() {
-	Perceptron p = Perceptron(4);
 	point_t A = {
 			.x=0,
 			.y=6
@@ -70,12 +70,38 @@ int main() {
 			.x=2,
 			.y=4
 	};
-	for(int i=0; i<100 ; i++) {
-		p.learn(A.x, A.y, 5);
-		p.learn(B.x, B.y, 5);
-		p.learn(C.x, C.y, 5);
-		p.learn(D.x, D.y, 5);
+	const double speeds[] =  {0.001, 0.01, 0.05, 0.1, 0.2, 0.3};
+	printf("for different speeds:\n");
+	for(int i=0; i< sizeof speeds / sizeof speeds[0]; i++) {
+		Perceptron p = Perceptron(4, speeds[i]);
+		clock_t start_p = clock();
+		for(int i=0; i<100 ; i++) {
+			p.learn(A.x, A.y, 5);
+			p.learn(B.x, B.y, 5);
+			p.learn(C.x, C.y, 5);
+			p.learn(D.x, D.y, 5);
+		}
+		clock_t end_p = clock();
+		double clk_p = (double)(end_p - start_p) / CLOCKS_PER_SEC;
+		printf("p1, 100 times speed=%f, timespent=%f\n", speeds[i], clk_p);
 		p.print_w();
 	}
+	printf("for different amount of iterations:\n");
+	const int it[] = { 100, 200, 500, 1000};
+	for(int i=0; i< sizeof it/ sizeof it[0]; i++) {
+		Perceptron p = Perceptron(4, 0.001);
+		clock_t start_p = clock();
+		for(int i=0; i<it[i]; i++) {
+			p.learn(A.x, A.y, 5);
+			p.learn(B.x, B.y, 5);
+			p.learn(C.x, C.y, 5);
+			p.learn(D.x, D.y, 5);
+		}
+		clock_t end_p = clock();
+		double clk_p = (double)(end_p - start_p) / CLOCKS_PER_SEC;
+		printf("p1, %d times speed=%f, timespent=%f\n", it[i],0.001, clk_p);
+		p.print_w();
+	}
+
 	return 0;
 }
